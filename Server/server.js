@@ -1,10 +1,19 @@
-import express from "express";
-const app = express();
+require("dotenv").config();
+
+const app = require('./app')
+const connectDB = require("./utils/db");
+
 const PORT = process.env.PORT || 5000;
 
-app.get("/", (req, res) => {
-  res.send("Server running");
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error("Failed to start server:", err);
+  }
+};
 
-app.listen(5000, () => console.log(`Server started listening on port: ${PORT}`));
-
+startServer();
