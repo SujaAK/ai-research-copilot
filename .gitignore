@@ -1,11 +1,62 @@
-# Node
+# ─────────────────────────────
+# Node / Express (Server/)
+# ─────────────────────────────
 node_modules/
-.env
+Server/node_modules/
+Server/uploads/
 
-# Python
-rag/venv/
+# ─────────────────────────────
+# Python / RAG (RAG/)
+# ─────────────────────────────
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+RAG/venv/
+RAG/Lib/
+RAG/Include/
+RAG/Scripts/
+RAG/pyvenv.cfg
+RAG/data/uploads/
+RAG/data/processed/
+*.faiss
 
+# ─────────────────────────────
+# Environment Variables
+# ─────────────────────────────
+.env
+*.env
+.env.local
+.env.production
+
+# ─────────────────────────────
+# Frontend (when you build it)
+# ─────────────────────────────
+Frontend/node_modules/
+Frontend/.next/
+Frontend/dist/
+Frontend/build/
+Frontend/.env.local
+
+# ─────────────────────────────
+# Logs
+# ─────────────────────────────
+*.log
+logs/
+
+# ─────────────────────────────
 # OS
+# ─────────────────────────────
 .DS_Store
+Thumbs.db
+
+# ─────────────────────────────
+# IDE
+# ─────────────────────────────
+.vscode/
+.idea/
+
+# ─────────────────────────────
+# Testing
+# ─────────────────────────────
+.pytest_cache/
+coverage/
