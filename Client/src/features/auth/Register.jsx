@@ -1,74 +1,111 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { registerUser } from "./authApi";
+import { AuthContext } from "../../context/AuthContext";
+import Input from "../../components/ui/Input";
+import Button from "../../components/ui/Button";
 
 const Register = () => {
   const navigate = useNavigate();
-
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+  const { login } = useContext(AuthContext);
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (form.password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+    setLoading(true);
     try {
-      await registerUser(form);
-      navigate("/");
+      const data = await registerUser(form);
+      login(data.token, { _id: data._id, name: data.name, email: data.email });
+      navigate("/dashboard");
     } catch (err) {
-      console.error(err);
-      alert("Registration failed");
+      setError(err.response?.data?.message || "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-xl shadow-md w-80"
-      >
-        <h2 className="text-xl font-bold mb-4">Register</h2>
+    <div style={{
+      minHeight: "100vh",
+      background: "var(--bg)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "24px",
+    }}>
+      <div style={{
+        position: "fixed",
+        inset: 0,
+        backgroundImage: `radial-gradient(circle at 80% 50%, rgba(201,169,110,0.04) 0%, transparent 60%)`,
+        pointerEvents: "none",
+      }} />
 
-        <input
-          type="text"
-          name="name"
-          placeholder="Name"
-          className="w-full mb-3 p-2 border rounded"
-          onChange={handleChange}
-        />
+      <div style={{ width: "100%", maxWidth: "400px", animation: "fadeUp 0.5s ease forwards" }}>
+        <div style={{ textAlign: "center", marginBottom: "40px" }}>
+          <h1 style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "2rem",
+            color: "var(--text-primary)",
+            marginBottom: "8px",
+          }}>
+            Research <span style={{ color: "var(--accent)" }}>Copilot</span>
+          </h1>
+          <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem" }}>
+            Start exploring your research papers
+          </p>
+        </div>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          className="w-full mb-3 p-2 border rounded"
-          onChange={handleChange}
-        />
+        <div style={{
+          background: "var(--bg-card)",
+          border: "1px solid var(--border)",
+          borderRadius: "var(--radius)",
+          padding: "36px",
+          boxShadow: "var(--shadow)",
+        }}>
+          <h2 style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: "24px", color: "var(--text-primary)" }}>
+            Create account
+          </h2>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          className="w-full mb-3 p-2 border rounded"
-          onChange={handleChange}
-        />
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+            <Input name="name" placeholder="Full name" value={form.name} onChange={handleChange} />
+            <Input type="email" name="email" placeholder="Email address" value={form.email} onChange={handleChange} />
+            <Input type="password" name="password" placeholder="Password (min 6 chars)" value={form.password} onChange={handleChange} />
 
-        <button className="w-full bg-black text-white py-2 rounded">
-          Register
-        </button>
+            {error && (
+              <p style={{
+                color: "var(--error)",
+                fontSize: "0.8rem",
+                padding: "8px 12px",
+                background: "rgba(224,92,92,0.08)",
+                borderRadius: "var(--radius-sm)",
+                border: "1px solid rgba(224,92,92,0.2)",
+              }}>
+                {error}
+              </p>
+            )}
 
-        <p className="text-sm mt-3">
-          Already have an account?{" "}
-          <Link to="/" className="text-blue-500">
-            Login
-          </Link>
-        </p>
-      </form>
+            <Button type="submit" loading={loading}>
+              Create account
+            </Button>
+          </form>
+
+          <p style={{ marginTop: "20px", fontSize: "0.8rem", color: "var(--text-muted)", textAlign: "center" }}>
+            Already have an account?{" "}
+            <Link to="/" style={{ color: "var(--accent)", textDecoration: "none" }}>Sign in</Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,7 +1,8 @@
 import AppRoutes from "./routes";
+import "./index.css";
 
-function App() {
+const App = () => {
   return <AppRoutes />;
-}
+};
 
 export default App;

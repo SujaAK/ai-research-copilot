@@ -1,65 +1,138 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { loginUser } from "./authApi";
+import { AuthContext } from "../../context/AuthContext";
+import Input from "../../components/ui/Input";
+import Button from "../../components/ui/Button";
 
 const Login = () => {
   const navigate = useNavigate();
-
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
+  const { login } = useContext(AuthContext);
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      await loginUser(form);
+      const data = await loginUser(form);
+      login(data.token, { _id: data._id, name: data.name, email: data.email });
       navigate("/dashboard");
     } catch (err) {
-      console.error(err);
-      alert("Login failed");
+      setError(err.response?.data?.message || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-xl shadow-md w-80"
-      >
-        <h2 className="text-xl font-bold mb-4">Login</h2>
+    <div style={{
+      minHeight: "100vh",
+      background: "var(--bg)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "24px",
+    }}>
+      {/* Background texture */}
+      <div style={{
+        position: "fixed",
+        inset: 0,
+        backgroundImage: `radial-gradient(circle at 20% 50%, rgba(201,169,110,0.04) 0%, transparent 60%),
+                          radial-gradient(circle at 80% 20%, rgba(201,169,110,0.03) 0%, transparent 50%)`,
+        pointerEvents: "none",
+      }} />
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          className="w-full mb-3 p-2 border rounded"
-          onChange={handleChange}
-        />
+      <div style={{
+        width: "100%",
+        maxWidth: "400px",
+        animation: "fadeUp 0.5s ease forwards",
+      }}>
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: "40px" }}>
+          <h1 style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "2rem",
+            color: "var(--text-primary)",
+            marginBottom: "8px",
+          }}>
+            Research <span style={{ color: "var(--accent)" }}>Copilot</span>
+          </h1>
+          <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem" }}>
+            Your AI-powered research assistant
+          </p>
+        </div>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          className="w-full mb-3 p-2 border rounded"
-          onChange={handleChange}
-        />
+        {/* Card */}
+        <div style={{
+          background: "var(--bg-card)",
+          border: "1px solid var(--border)",
+          borderRadius: "var(--radius)",
+          padding: "36px",
+          boxShadow: "var(--shadow)",
+        }}>
+          <h2 style={{
+            fontSize: "1.1rem",
+            fontWeight: 600,
+            marginBottom: "24px",
+            color: "var(--text-primary)",
+          }}>
+            Sign in
+          </h2>
 
-        <button className="w-full bg-black text-white py-2 rounded">
-          Login
-        </button>
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+            <Input
+              type="email"
+              name="email"
+              placeholder="Email address"
+              value={form.email}
+              onChange={handleChange}
+            />
+            <Input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={form.password}
+              onChange={handleChange}
+            />
 
-        <p className="text-sm mt-3">
-          No account?{" "}
-          <Link to="/register" className="text-blue-500">
-            Register
-          </Link>
-        </p>
-      </form>
+            {error && (
+              <p style={{
+                color: "var(--error)",
+                fontSize: "0.8rem",
+                padding: "8px 12px",
+                background: "rgba(224,92,92,0.08)",
+                borderRadius: "var(--radius-sm)",
+                border: "1px solid rgba(224,92,92,0.2)",
+              }}>
+                {error}
+              </p>
+            )}
+
+            <Button type="submit" loading={loading} style={{ width: "100%", marginTop: "4px" }}>
+              Sign in
+            </Button>
+          </form>
+
+          <p style={{
+            marginTop: "20px",
+            fontSize: "0.8rem",
+            color: "var(--text-muted)",
+            textAlign: "center",
+          }}>
+            No account?{" "}
+            <Link to="/register" style={{ color: "var(--accent)", textDecoration: "none" }}>
+              Create one
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
