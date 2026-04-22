@@ -59,4 +59,13 @@ Thumbs.db
 # Testing
 # ─────────────────────────────
 .pytest_cache/
-coverage/
+coverage/RAG/Lib/
+RAG/Scripts/
+RAG/Include/
+RAG/venv/
+RAG/data/
+RAG/.env
+**/node_modules/
+**/__pycache__/
+**/*.pyc
+.env
