@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { getPapers, deletePaper } from "../../services/paperApi";
 import { useNavigate } from "react-router-dom";
 import UploadPaper from "./UploadPaper";
-import CompareModal from "./CompareModal";
+import CompareModal from "./compareModal";
 import Loader from "../../components/ui/Loader";
 
 const statusConfig = {
