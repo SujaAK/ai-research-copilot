@@ -1,33 +1,60 @@
-import { useContext } from "react";
-import { Navigate } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
+const Button = ({ children, onClick, loading, disabled, variant = "primary", style = {}, type = "button" }) => {
+  const styles = {
+    primary: {
+      background: "var(--accent)",
+      color: "#0f0f0f",
+      border: "none",
+    },
+    ghost: {
+      background: "transparent",
+      color: "var(--text-secondary)",
+      border: "1px solid var(--border-light)",
+    },
+    danger: {
+      background: "transparent",
+      color: "var(--error)",
+      border: "1px solid var(--error)",
+    },
+  };
 
-const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useContext(AuthContext);
-
-  if (loading) {
-    return (
-      <div style={{
-        height: "100vh",
-        display: "flex",
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={loading || disabled}
+      style={{
+        ...styles[variant],
+        width: "100%",
+        padding: "10px 20px",
+        borderRadius: "var(--radius-sm)",
+        fontSize: "0.875rem",
+        fontWeight: 600,
+        fontFamily: "var(--font-body)",
+        cursor: loading || disabled ? "not-allowed" : "pointer",
+        opacity: loading || disabled ? 0.5 : 1,
+        transition: "all 0.2s",
+        display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "var(--bg)",
-      }}>
-        <div style={{
-          width: 28,
-          height: 28,
-          border: "2px solid var(--border)",
-          borderTop: "2px solid var(--accent)",
+        gap: "8px",
+        whiteSpace: "nowrap",
+        ...style,
+      }}
+    >
+      {loading && (
+        <span style={{
+          width: 14,
+          height: 14,
+          border: "2px solid currentColor",
+          borderTopColor: "transparent",
           borderRadius: "50%",
-          animation: "spin 0.8s linear infinite",
+          display: "inline-block",
+          animation: "spin 0.7s linear infinite",
         }} />
-      </div>
-    );
-  }
-
-  if (!user) return <Navigate to="/" replace />;
-  return children;
+      )}
+      {loading ? "Loading..." : children}
+    </button>
+  );
 };
 
-export default ProtectedRoute;
+export default Button;

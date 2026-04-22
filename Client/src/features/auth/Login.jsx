@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { loginUser } from "./authApi";
 import { AuthContext } from "../../context/AuthContext";
@@ -7,10 +7,18 @@ import Button from "../../components/ui/Button";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+  const { login, user } = useContext(AuthContext);
+
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // ✅ FIX: Redirect using useEffect (NOT inside render)
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -20,12 +28,24 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       const data = await loginUser(form);
-      login(data.token, { _id: data._id, name: data.name, email: data.email });
+
+      login(data.token, {
+        _id: data._id,
+        name: data.name,
+        email: data.email,
+      });
+
+      // Optional (safe but not required because of useEffect)
       navigate("/dashboard");
+
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed. Please try again.");
+      setError(
+        err.response?.data?.message ||
+        "Login failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -40,7 +60,7 @@ const Login = () => {
       justifyContent: "center",
       padding: "24px",
     }}>
-      {/* Background texture */}
+      {/* Background */}
       <div style={{
         position: "fixed",
         inset: 0,
@@ -52,7 +72,6 @@ const Login = () => {
       <div style={{
         width: "100%",
         maxWidth: "400px",
-        animation: "fadeUp 0.5s ease forwards",
       }}>
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "40px" }}>
@@ -64,6 +83,7 @@ const Login = () => {
           }}>
             Research <span style={{ color: "var(--accent)" }}>Copilot</span>
           </h1>
+
           <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem" }}>
             Your AI-powered research assistant
           </p>
@@ -86,7 +106,10 @@ const Login = () => {
             Sign in
           </h2>
 
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+          <form
+            onSubmit={handleSubmit}
+            style={{ display: "flex", flexDirection: "column", gap: "14px" }}
+          >
             <Input
               type="email"
               name="email"
@@ -94,6 +117,7 @@ const Login = () => {
               value={form.email}
               onChange={handleChange}
             />
+
             <Input
               type="password"
               name="password"
@@ -115,7 +139,11 @@ const Login = () => {
               </p>
             )}
 
-            <Button type="submit" loading={loading} style={{ width: "100%", marginTop: "4px" }}>
+            <Button
+              type="submit"
+              loading={loading}
+              style={{ width: "100%" }}
+            >
               Sign in
             </Button>
           </form>
@@ -127,7 +155,10 @@ const Login = () => {
             textAlign: "center",
           }}>
             No account?{" "}
-            <Link to="/register" style={{ color: "var(--accent)", textDecoration: "none" }}>
+            <Link
+              to="/register"
+              style={{ color: "var(--accent)", textDecoration: "none" }}
+            >
               Create one
             </Link>
           </p>

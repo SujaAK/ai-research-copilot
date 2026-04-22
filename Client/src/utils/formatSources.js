@@ -1,3 +1,7 @@
+/**
+ * Normalize raw source chunks from the RAG API into a consistent shape
+ * for use in SourcesPanel and MessageBubble.
+ */
 export const formatSources = (sources = []) => {
   if (!sources.length) return [];
 

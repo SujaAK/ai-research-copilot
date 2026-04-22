@@ -1,39 +1,26 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
  
-const paperSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    title: {
+    name: {
       type: String,
-      required: true,
+      required: [true, "Name is required"],
       trim: true,
     },
-    fileUrl: {
+    email: {
       type: String,
-      required: true,
+      required: [true, "Email is required"],
+      unique: true,
+      lowercase: true,
+      match: [/^\S+@\S+\.\S+$/, "Please enter a valid email"],
     },
-    fileName: {
+    password: {
       type: String,
-    },
-    status: {
-      type: String,
-      enum: ["uploaded", "processing", "ready", "failed"],
-      default: "uploaded",
-    },
-    vectorized: {
-      type: Boolean,
-      default: false,
-    },
-    uploadedAt: {
-      type: Date,
-      default: Date.now,
+      required: [true, "Password is required"],
+      minlength: 6,
     },
   },
   { timestamps: true }
 );
  
-module.exports = mongoose.model("Paper", paperSchema);
+module.exports = mongoose.model("User", userSchema);
