@@ -4,8 +4,8 @@ nixPkgs = ["python311Full"]
 [phases.install]
 cmds = [
   "curl -sS https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py --break-system-packages",
-  "python3 -m pip install torch --index-url https://download.pytorch.org/whl/cpu --break-system-packages",
-  "python3 -m pip install -r requirements.txt --break-system-packages -v 2>&1 | tail -50"
+  "python3 -m pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu --break-system-packages",
+  "python3 -m pip install -r requirements.txt --break-system-packages"
 ]
 
 [start]
